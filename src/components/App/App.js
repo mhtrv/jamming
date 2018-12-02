@@ -3,6 +3,7 @@ import './App.css';
 import SearchBar from '../SearchBar/SearchBar.js';
 import SearchResults from '../SearchResults/SearchResults.js';
 import Playlist from '../Playlist/Playlist.js';
+import Spotify from '../../util/Spotify.js';
 
 const searchRes1 = {name: 'Yellow Submarine', artist: 'Beatles', album: 'Best of the Beatles', id: '1'};
 const searchRes2 = {name: 'Red Submarine', artist: 'Beatles', album: 'Best of the Beatles', id: '2'};
@@ -53,8 +54,11 @@ class App extends React.Component {
     })
   }
 
-  search(searchTerm) {
-    console.log(searchTerm);
+  search(term) {
+    console.log(term);
+    Spotify.search(term).then(tracks => {
+      this.setState({searchResults: tracks});
+    })
   }
 
   render() {
