@@ -1,5 +1,5 @@
 const accessToken = '';
-const clientID = '8ae08515175e43babb9d114ba8ec4477';
+const clientID = '48a9d52bbb8148e88009c595ce498aa1';
 const redirectURI = 'http://localhost:3000/';
 
 const Spotify = {
@@ -8,17 +8,19 @@ const Spotify = {
       console.log('token already exists');
       return accessToken;
     } else if(window.location.href.match(/access_token=([^&]*)/) && window.location.href.match(/expires_in=([^&]*)/)) {
+      console.log('Access token extracted from URI');
       accessToken = window.location.href.match(/access_token=([^&]*)/);
       const expiresIn = window.location.href.match(/expires_in=([^&]*)/);
       window.setTimeout(() => accessToken = '', expiresIn * 1000);
       window.history.pushState('Access Token', null, '/');
-      console.log('Access token extracted from URI');
     } else {
-      window.location=`https://accounts.spotify.com/authorize?client_id=${clientID}}&response_type=token&scope=playlist-modify-public&redirect_uri=${redirectURI}`;
       console.log('Trying final option to access token');
+      window.location=`https://accounts.spotify.com/authorize?client_id=${clientID}}&response_type=token&scope=playlist-modify-public&redirect_uri=${redirectURI}`;
     }
   },
   search(term) {
+    this.getAccessToken();
+    console.log('successfully ran getAccessToken');
     return fetch(`https://api.spotify.com/v1/search?type=track&q=${term}`,{
         headers: {
           Authorization: `Bearer ${accessToken}`
