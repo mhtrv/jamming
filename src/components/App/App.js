@@ -5,20 +5,20 @@ import SearchResults from '../SearchResults/SearchResults.js';
 import Playlist from '../Playlist/Playlist.js';
 import Spotify from '../../util/Spotify.js';
 
-const searchRes1 = {name: 'Yellow Submarine', artist: 'Beatles', album: 'Best of the Beatles', id: '1'};
-const searchRes2 = {name: 'Red Submarine', artist: 'Beatles', album: 'Best of the Beatles', id: '2'};
-const searchRes3 = {name: 'Purple Submarine', artist: 'Beatles', album: 'Best of the Beatles', id: '3'};
+//const searchRes1 = {name: 'Yellow Submarine', artist: 'Beatles', album: 'Best of the Beatles', id: '1'};
+//const searchRes2 = {name: 'Red Submarine', artist: 'Beatles', album: 'Best of the Beatles', id: '2'};
+//const searchRes3 = {name: 'Purple Submarine', artist: 'Beatles', album: 'Best of the Beatles', id: '3'};
 
-const playlistTrack1 = {name: 'Cassandra', artist: 'ABBA', album: 'Best of ABBA', id: '11'};
-const playlistTrack2 = {name: 'Barcelona', artist: 'ABBA', album: 'Best of ABBA', id: '12'};
+//const playlistTrack1 = {name: 'Cassandra', artist: 'ABBA', album: 'Best of ABBA', id: '11'};
+//const playlistTrack2 = {name: 'Barcelona', artist: 'ABBA', album: 'Best of ABBA', id: '12'};
 
 class App extends React.Component {
   constructor(props) {
    super(props);
    this.state = {
-                searchResults: [searchRes1, searchRes2, searchRes3],
-                playlistName: 'Best of the Beatles',
-                playlistTracks: [playlistTrack1,playlistTrack2]
+                searchResults: [],
+                playlistName: '',
+                playlistTracks: []
                 };
 
     this.addTrack = this.addTrack.bind(this);
@@ -49,9 +49,13 @@ class App extends React.Component {
   }
 
   savePlaylist() {
+    console.log('Running save playlist');
+    const playListName=this.state.playlistName;
+    //const trackURIs=this.state.playlistTracks;
     const trackURIs = this.state.playlistTracks.map(savedTrack => {
-      return `spotify:track:${savedTrack}`
+      return `spotify:track:${savedTrack.id}`;
     })
+    Spotify.savePlaylist(playListName,trackURIs);
   }
 
   search(term) {
