@@ -7,12 +7,12 @@ import Spotify from '../../util/Spotify.js';
 
 class App extends React.Component {
   constructor(props) {
-   super(props);
-   this.state = {
-                searchResults: [],
-                playlistName: '',
-                playlistTracks: []
-                };
+    super(props);
+    this.state = {
+      searchResults: [],
+      playlistName: 'New Playlist',
+      playlistTracks: []
+    };
 
     this.addTrack = this.addTrack.bind(this);
     this.removeTrack = this.removeTrack.bind(this);
@@ -42,9 +42,7 @@ class App extends React.Component {
   }
 
   savePlaylist() {
-    console.log('Running save playlist');
     const playListName=this.state.playlistName;
-    //const trackURIs=this.state.playlistTracks;
     const trackURIs = this.state.playlistTracks.map(savedTrack => {
       return `spotify:track:${savedTrack.id}`;
     })
@@ -52,11 +50,10 @@ class App extends React.Component {
   }
 
   search(term) {
-    console.log(term);
-    console.log('running search');
+    const accessToken=Spotify.getAccessToken;
     Spotify.search(term).then(tracks => {
       this.setState({searchResults: tracks});
-    })
+    });
   }
 
   render() {
