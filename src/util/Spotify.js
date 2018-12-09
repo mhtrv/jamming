@@ -61,11 +61,11 @@ const Spotify = {
 
   savePlaylist (playListName, trackURIs) {
         if(!playListName || !trackURIs) {
-          console.log('playListName or trackURIs were empty');
-          return
+          return;
         }
-        console.log('playListName and trackURIs were non-empty');
+
         this.getAccessToken();
+
 
         fetch(`https://api.spotify.com/v1/me`,{
             headers: {
@@ -76,61 +76,68 @@ const Spotify = {
             console.log ('response is OK');
             return response.json();
           }
+          console.log('Request failed while obtaining user id');
         }).then(jsonResponse => {
             console.log(jsonResponse);
             if(jsonResponse.id) {
               userId=jsonResponse.id;
               console.log (userId);
               //return userId;
+
+              if(userId) {
+                console.log('Successfully obtained userId now creating playList');
+
+                fetch(`https://api.spotify.com/v1/users/${userId}/playlists`,{
+                    headers: {
+                      Authorization: `Bearer ${accessToken}`,
+                      'Content-Type': 'application/json'
+                    },
+                    method: 'POST',
+                    body: JSON.stringify({name: playListName})
+                }).then(response => {
+                  if (response.ok) {
+                    console.log ('Create playlist response is OK');
+                    return response.json();
+                  }
+                  console.log(response);
+                }).then(jsonResponse => {
+                    console.log('json response after creating playlist');
+                    if(jsonResponse.id) {
+                      playlistID = jsonResponse.id;
+                      console.log(`playlistID is ${playlistID}`);
+
+                      if(playlistID){
+                        console.log(JSON.stringify({uris: trackURIs}));
+                        fetch(`https://api.spotify.com/v1/playlists/${playlistID}/tracks`,{
+                            headers: {
+                              Authorization: `Bearer ${accessToken}`,
+                              'Content-Type': 'application/json'
+                            },
+                            method: 'PUT',
+                            body: JSON.stringify({uris: trackURIs})
+                        }).then(response => {
+                          if (response.ok) {
+                            console.log ('Successfully added tracks to playList');
+                            return response.json();
+                          }
+                          console.log(response);
+                        }).then(jsonResponse => {
+                            console.log('json response after adding tracks to playlist');
+                        });
+                      } else {
+                        console.log(`playlistID is empty ${playlistID}`);
+                      }
+
+                    }
+                });
+              }
+
             }
         });
 
-        if(userId) {
-          console.log('Successfully obtained userId now creating playList');
 
-          fetch(`https://api.spotify.com/v1/users/${userId}/playlists`,{
-              headers: {
-                Authorization: `Bearer ${accessToken}`,
-                'Content-Type': 'application/json'
-              },
-              method: 'POST',
-              body: JSON.stringify({name: playListName})
-          }).then(response => {
-            if (response.ok) {
-              console.log ('Create playlist response is OK');
-              return response.json();
-            }
-            console.log(response);
-          }).then(jsonResponse => {
-              console.log('json response after creating playlist');
-              if(jsonResponse.id) {
-                playlistID = jsonResponse.id;
-                console.log(`playlistID is ${playlistID}`);
-              }
-          });
-        }
 
-        if(playlistID){
-          console.log(JSON.stringify({uris: trackURIs}));
-          fetch(`https://api.spotify.com/v1/playlists/${playlistID}/tracks`,{
-              headers: {
-                Authorization: `Bearer ${accessToken}`,
-                'Content-Type': 'application/json'
-              },
-              method: 'PUT',
-              body: JSON.stringify({uris: trackURIs})
-          }).then(response => {
-            if (response.ok) {
-              console.log ('Successfully added tracks to playList');
-              return response.json();
-            }
-            console.log(response);
-          }).then(jsonResponse => {
-              console.log('json response after adding tracks to playlist');
-          });
-        } else {
-          console.log(`playlistID is empty ${playlistID}`);
-        }
+
 
   }
 
